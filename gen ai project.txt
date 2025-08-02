@@ -1,0 +1,25 @@
+!pip install transformers sentencepiece
+
+from transformers import pipeline
+
+paraphraser = pipeline("text2text-generation", model="ramsrigouthamg/t5_paraphraser", tokenizer="ramsrigouthamg/t5_paraphraser", framework="pt")
+
+text = input("Enter your text to rephrase:\n")
+
+def rephrase_text(text, max_len=200):
+    sentences = text.split('. ')
+    result = []
+    for sentence in sentences:
+        if sentence.strip() == '':
+            continue
+        try:
+            input_sentence = "paraphrase: " + sentence.strip() + " </s>"
+            output = paraphraser(input_sentence, max_length=max_len, num_beams=5, num_return_sequences=1, clean_up_tokenization_spaces=True)
+            result.append(output[0]['generated_text'])
+        except:
+            result.append(sentence)
+    return '. '.join(result)
+
+output = rephrase_text(text)
+print("\nRephrased Output:\n")
+print(output)
